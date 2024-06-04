@@ -23,19 +23,19 @@ I_b = np.array([]).astype(float)  # binomial
 
 results = []
 results_ml = []
-lam = 7.0
-#for lam in range(1, 100):
-#    lam = float(lam)
-for threshold in np.arange(0.0, 0.1, 0.02):
-    lag = HGGM.find_lag_supervised(5.0, series, truth, lam, threshold, eng)
-    avg_py = 0.0
-    for i in range(0, 5):
-        coefs_py = HGGM.hggm(series, lam, I_n, I_in, I_p, I_g, I_b, eng, lag)[0]
-        result_py = helpers.classify_coefs(coefs_py, threshold, p)
-        fmeasure_py = helpers.fmeasure(truth, result_py)
-        avg_py = avg_py + fmeasure_py
+#lam = 7.0
+for lam in range(1, 50):
+    lam = float(lam)
+    for threshold in np.arange(0.0, 0.2, 0.02):
+        lag = HGGM.find_lag_supervised(20.0, series, truth, lam, threshold, eng)
+        avg_py = 0.0
+        for i in range(0, 10):
+            coefs_py = HGGM.hggm(series, lam, I_n, I_in, I_p, I_g, I_b, eng, lag)[0]
+            result_py = helpers.classify_coefs(coefs_py, threshold, p)
+            fmeasure_py = helpers.fmeasure(truth, result_py)
+            avg_py = avg_py + fmeasure_py
 
-        results.append([avg_py/5, lag, threshold, lam])
+            results.append([avg_py/10, lag, threshold, lam])
 results = np.array(results)
 results = results[results[:,0].argsort()[::-1]]
 
@@ -51,7 +51,7 @@ lam = results[0][3]
 
 avg_ml = 0.0
 avg_py = 0.0
-for i in range(0, 5):
+for i in range(0, 10):
     coefs_ml = HGGM.hggm_matlab(series, int(lag), lam, I_n, I_p, I_g, I_b, eng)
     result_ml = helpers.classify_coefs(coefs_ml, threshold, p)
     fmeasure_ml = helpers.fmeasure(truth, result_ml)
